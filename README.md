@@ -1,0 +1,2 @@
+# HTTPServerGO
+这是一个用Go编写的红队内网环境中一个能快速开启HTTP文件浏览服务的小工具，能够执行shell命令,可以执行webshell
