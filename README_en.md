@@ -69,3 +69,11 @@ To dump the PHP shell and execute it on the server:
 ```
 httpserver -dump -m php -cs cmd
 ```
+
+##  Disclaimers 
+
+ When using this tool for testing, you should ensure that the behavior complies with local laws and regulations and has obtained sufficient authorization**Do not scan unauthorized targets** 
+
+ If you engage in any illegal behavior during the use of this tool, you shall bear the corresponding consequences on your own, and we will not assume any legal or joint liability. 
+
+ Before installing and using this tool, please **carefully read and fully understand the content of each clause **. Restrictions, disclaimers, or other clauses that involve your significant rights and interests may be highlighted in bold, underlined, or other forms. Unless you have fully read, understood, and accepted all the terms of this agreement, please do not install and use this tool. Your use or any other express or implied acceptance of this agreement by you shall be deemed to have read and agreed to be bound by this agreement. 
